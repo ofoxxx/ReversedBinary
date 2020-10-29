@@ -1,20 +1,42 @@
-// ReversedBinary.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+using namespace std;
+
+template <bool...sequence>
+int reversed_binary_value()
+{
+	auto vb = { sequence... };
+	int r = 0, i = 0;
+	for (int b : vb)
+		r += (b << i++);
+	return r;
+}
+
+template <int n, bool...digits>
+struct CheckValues {
+	static void check(int x, int y)
+	{
+		CheckValues<n - 1, 0, digits...>::check(x, y);
+		CheckValues<n - 1, 1, digits...>::check(x, y);
+	}
+};
+
+template <bool...digits>
+struct CheckValues<0, digits...> {
+	static void check(int x, int y)
+	{
+		int z = reversed_binary_value<digits...>();
+		std::cout << (z + 64 * y == x);
+	}
+};
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	int t; std::cin >> t;
+
+	for (int i = 0; i != t; ++i) {
+		int x, y;
+		cin >> x >> y;
+		CheckValues<6>::check(x, y);
+		cout << "\n";
+	}
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
